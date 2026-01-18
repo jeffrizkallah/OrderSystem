@@ -36,6 +36,13 @@ export async function createOrder(
     revalidatePath('/');
     redirect(`/orders/${order.id}`);
   } catch (error) {
+    // Check if this is a redirect error (which is expected)
+    if (error && typeof error === 'object' && 'digest' in error && 
+        typeof error.digest === 'string' && error.digest.startsWith('NEXT_REDIRECT')) {
+      // This is a Next.js redirect, re-throw it to let Next.js handle it
+      throw error;
+    }
+    // This is an actual error, log and return it
     console.error('Failed to create order:', error);
     return { error: 'Failed to create order' };
   }
@@ -67,6 +74,13 @@ export async function deleteOrder(orderId: number) {
     revalidatePath('/');
     redirect('/orders');
   } catch (error) {
+    // Check if this is a redirect error (which is expected)
+    if (error && typeof error === 'object' && 'digest' in error && 
+        typeof error.digest === 'string' && error.digest.startsWith('NEXT_REDIRECT')) {
+      // This is a Next.js redirect, re-throw it to let Next.js handle it
+      throw error;
+    }
+    // This is an actual error, log and return it
     console.error('Failed to delete order:', error);
     return { error: 'Failed to delete order' };
   }

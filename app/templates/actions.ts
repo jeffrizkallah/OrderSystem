@@ -35,6 +35,13 @@ export async function createTemplate(
     revalidatePath('/orders/new');
     redirect('/templates');
   } catch (error) {
+    // Check if this is a redirect error (which is expected)
+    if (error && typeof error === 'object' && 'digest' in error && 
+        typeof error.digest === 'string' && error.digest.startsWith('NEXT_REDIRECT')) {
+      // This is a Next.js redirect, re-throw it to let Next.js handle it
+      throw error;
+    }
+    // This is an actual error, log and return it
     console.error('Failed to create template:', error);
     return { error: 'Failed to create template' };
   }
